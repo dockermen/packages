@@ -1,7 +1,10 @@
 if PACKAGE_privoxy
 
 	comment "Shared libraries settings"
-
+	config PRIVOXY_with-openssl
+		bool "privoxy_https openssl"
+		default n
+		
 	config PRIVOXY_disable-pthread
 		bool "Don't use POSIX libpthread (-5489b)"
 		default n

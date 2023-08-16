@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=privoxy
-PKG_VERSION:=3.0.33
+PKG_VERSION:=3.0.34
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=privoxy-$(PKG_VERSION)-stable-src.tar.gz
 PKG_SOURCE_URL:=@SF/ijbswa
-PKG_HASH:=04b104e70dac61561b9dd110684b250fafc8c13dbe437a60fae18ddd9a881fae
+PKG_HASH:=e6ccbca1656f4e616b4657f8514e33a70f6697e9d7294356577839322a3c5d2c
 PKG_BUILD_DIR:=$(BUILD_DIR)/privoxy-$(PKG_VERSION)-stable
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
@@ -25,6 +25,7 @@ PKG_CPE_ID:=cpe:/a:privoxy:privoxy
 PKG_MAINTAINER:=
 
 PKG_CONFIG_DEPENDS:= \
+  CONFIG_PRIVOXY_with-openssl \
   CONFIG_IPV6 \
   \
   CONFIG_PRIVOXY_disable-pthread \
@@ -58,7 +59,7 @@ define Package/privoxy
   URL:=http://www.privoxy.org/
   USERID:=privoxy=8118:privoxy=8118
   MENU:=1
-  DEPENDS:=+!PRIVOXY_no_pcre:libpcre +!PRIVOXY_no_pthread:libpthread +!PRIVOXY_no_zlib:zlib
+  DEPENDS:=+!PRIVOXY_no_libopenssl:libopenssl +!PRIVOXY_no_pcre:libpcre +!PRIVOXY_no_pthread:libpthread +!PRIVOXY_no_zlib:zlib
 endef
 
 # shown in LuCI package description
@@ -105,7 +106,8 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_PRIVOXY_enable-external-filters),--enable-external-filters) \
 	$(if $(CONFIG_PRIVOXY_enable-accept-filter),--enable-accept-filter) \
 	$(if $(CONFIG_PRIVOXY_enable-strptime-sanity-checks),--enable-strptime-sanity-checks) \
-	$(if $(CONFIG_PRIVOXY_enable-compression),--enable-compression)
+	$(if $(CONFIG_PRIVOXY_enable-compression),--enable-compression) \
+	$(if $(CONFIG_PRIVOXY_with-openssl),--with-openssl)
 
 # needed otherwise errors during compile
 MAKE_FLAGS:=
@@ -154,6 +156,17 @@ define Package/privoxy/install
 	$(INSTALL_BIN)  ./files/privoxy.hotplug $(1)/etc/hotplug.d/iface/95-privoxy
 	$(INSTALL_CONF) ./files/privoxy.config $(1)/etc/config/privoxy
 endef
+
+
+#define Build/Configure
+#	#(cd $(PKG_BUILD_DIR); autoheader && autoconf)
+#	(cd $(PKG_BUILD_DIR); ./configure --with-openssl)
+#	$(call Build/Configure/Default)
+#endef
+
+
+
+
 
 define Package/privoxy/postinst
 	#!/bin/sh

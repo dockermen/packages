@@ -76,9 +76,18 @@ _uci2conf() {
 	# privoxy needs read access (possibly write access)
 	_CONFDIR=$(uci -q get privoxy.privoxy.confdir) || _CONFDIR="/etc/privoxy"
 	chmod 755 $_CONFDIR
-	chmod 664 $_CONFDIR/*
+	chmod 777 $_CONFDIR/*
 	chgrp privoxy $_CONFDIR $_CONFDIR/*
 	echo -e "confdir\t$_CONFDIR" >> $CFGTEMP
+	
+	echo -e "#################\n#\tPrivoxy Enable SSL\t#\n#######################" >> $CFGTEMP
+	echo -e "ca-directory\t/etc/privoxy/CA" >> $CFGTEMP
+	echo -e "ca-cert-file\tcacert.crt" >> $CFGTEMP
+	echo -e "ca-key-file\tcakey.pem" >> $CFGTEMP
+	echo -e "ca-password\t12345678" >> $CFGTEMP
+	echo -e "trusted-cas-file\ttrustedCAs.pem" >> $CFGTEMP
+	echo -e "certificate-directory\t/etc/privoxy/certs" >> $CFGTEMP
+	echo -e "########################################" >> $CFGTEMP
 
 	# templdir
 	# privoxy need read access
